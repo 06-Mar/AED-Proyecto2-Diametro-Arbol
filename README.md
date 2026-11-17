@@ -4,9 +4,25 @@ Implementación en **C++17** del diámetro de un árbol no dirigido y no pondera
 
 Proyecto Final 2 de Algoritmos y Estructuras de Datos, tema 12. El contrato completo está en [docs/REQUERIMIENTOS_CPP_DIAMETRO_ARBOL.md](docs/REQUERIMIENTOS_CPP_DIAMETRO_ARBOL.md).
 
+## ¿Cómo se resuelve el diámetro de un árbol?
+
+El **diámetro** es el camino simple de mayor longitud entre dos nodos: un camino que no repite nodos. En este proyecto, cada arista vale una unidad, así que la longitud se mide contando aristas. No depende de cuál nodo dibujemos como raíz ni de la altura que tenga el dibujo del árbol.
+
+En un árbol hay exactamente un camino simple entre cada par de nodos. Podríamos buscar la distancia entre todas las parejas, pero eso repetiría mucho trabajo. Una propiedad de los árboles no ponderados permite encontrar el diámetro con solo **dos búsquedas en anchura (BFS)**: un nodo a distancia máxima desde cualquier origen es un extremo de algún diámetro.
+
+BFS explora por niveles mediante una cola FIFO: primero visita el origen, después sus vecinos a distancia `1`, luego los nodos a distancia `2`, y así sucesivamente. Al descubrir cada nodo, guarda su distancia y el padre desde el que llegó. Esto permite encontrar el nodo más lejano y reconstruir después el camino recorrido.
+
+1. **Primer BFS:** partir de cualquier nodo `s` y encontrar el más lejano `a`. Este recorrido sirve para situarnos en un extremo del diámetro; su distancia desde `s` todavía puede ser menor que el diámetro.
+2. **Segundo BFS:** partir de `a` y encontrar el más lejano `b`. Ahora la distancia entre `a` y `b` es la longitud del diámetro.
+3. **Reconstruir el camino:** comenzar en `b`, seguir los padres guardados por el segundo BFS hasta llegar a `a` e invertir esa secuencia para entregar el camino de `a` hacia `b`.
+
+En el ejemplo del proyecto, desde `1` el primer BFS alcanza `7` a distancia `4`. Al comenzar el segundo BFS en `7`, se alcanza `4` a distancia `5`. El diámetro es entonces **5 aristas** y su camino es **`7 → 6 → 5 → 2 → 3 → 4`**. Si hay varios nodos igualmente lejanos, elegimos el de menor ID para obtener siempre el mismo resultado.
+
+Cada BFS visita cada nodo una vez y examina cada arista en sus dos sentidos. Como un árbol de `n` nodos tiene `n-1` aristas, la solución completa requiere **O(n) tiempo y O(n) memoria**. Para un árbol de un solo nodo, ambos extremos son ese mismo nodo, el camino contiene solo ese nodo y el diámetro es `0`.
+
 ## Compilar
 
-Requiere un compilador C++17 con soporte de `std::filesystem` (GCC 9+, Clang con biblioteca equivalente o Visual Studio 2019+) y CMake 3.16+. Python 3 es opcional y se utiliza únicamente para las pruebas. No se descargan dependencias.
+Requiere un compilador C++17 con soporte de `std::filesystem` (GCC 9+, Clang con biblioteca equivalente o Visual Studio 2019+) y CMake 3.16+. No se descargan dependencias y no se requiere Python para compilar ni ejecutar el programa.
 
 ```sh
 cmake -S cpp -B build -DCMAKE_BUILD_TYPE=Release
@@ -108,19 +124,9 @@ El animador decide coordenadas y duración de cada transición. No necesita reca
 
 Primero se valida toda la entrada y el resultado. Se escribe un temporal exclusivo junto al destino; se comprueban escritura, vaciado y cierre antes de renombrarlo. Ante fallos se limpia el temporal propio y se conserva la salida anterior. Un temporal preexistente no se sobrescribe. No se imprime éxito si el reemplazo falla. Una interrupción abrupta puede dejar un temporal que se puede eliminar manualmente; nunca se presenta como el JSON final.
 
-## Pruebas
+## Validación realizada
 
-```sh
-ctest --test-dir build -C Release --output-on-failure
-```
-
-O directamente, con la ruta del ejecutable:
-
-```sh
-python tests/test_diametro.py build/diametro
-```
-
-La batería cubre T1–T12 del documento, sintaxis estricta, opciones de CLI, protección de entrada, reemplazo seguro, colisiones de temporales y determinismo. Compara **todo el JSON y cada evento** con un oráculo independiente en Python; en 75 árboles aleatorios con semilla fija también verifica el diámetro mediante distancias entre todas las parejas. Prueba una cadena y una estrella de 10 000 nodos para verificar el uso iterativo y la validación de duplicados. La prueba de destino de solo lectura es específica de Windows y se omite en otros sistemas. GitHub Actions está configurado para ejecutar la batería en Windows y Linux.
+La implementación se verificó localmente con 23 pruebas, que cubren los casos T1–T12 del documento, la traza JSON completa, 75 árboles aleatorios y una cadena y una estrella de 10 000 nodos. Las pruebas y la configuración de CI se conservan localmente y están excluidas del seguimiento de Git. El repositorio distribuido contiene el código necesario para generar los JSON, las entradas de ejemplo y la documentación.
 
 ## Archivos
 
@@ -129,6 +135,5 @@ cpp/include/    Arreglos, cola, árbol, eventos y resultados
 cpp/src/        Lectura, validación, BFS, diámetro, JSON y CLI
 inputs/         Árbol demo, un nodo, dos nodos, cadena y estrella
 outputs/        JSON completos generados por C++ para animación
-tests/          Oráculo y pruebas de caja negra
 docs/           Requerimientos originales del equipo
 ```
