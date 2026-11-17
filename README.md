@@ -2,7 +2,7 @@
 
 Implementación en **C++17** del diámetro de un árbol no dirigido y no ponderado mediante **dos BFS**, con exportación de los eventos reales a JSON `1.0` para animación en Manim u otra herramienta.
 
-Proyecto Final 2 de Algoritmos y Estructuras de Datos, tema 12. El contrato completo está en [docs/REQUERIMIENTOS_CPP_DIAMETRO_ARBOL.md](docs/REQUERIMIENTOS_CPP_DIAMETRO_ARBOL.md).
+Proyecto Final 2 de Algoritmos y Estructuras de Datos, tema 12.
 
 ## ¿Cómo se resuelve el diámetro de un árbol?
 
@@ -19,49 +19,6 @@ BFS explora por niveles mediante una cola FIFO: primero visita el origen, despu�
 En el ejemplo del proyecto, desde `1` el primer BFS alcanza `7` a distancia `4`. Al comenzar el segundo BFS en `7`, se alcanza `4` a distancia `5`. El diámetro es entonces **5 aristas** y su camino es **`7 → 6 → 5 → 2 → 3 → 4`**. Si hay varios nodos igualmente lejanos, elegimos el de menor ID para obtener siempre el mismo resultado.
 
 Cada BFS visita cada nodo una vez y examina cada arista en sus dos sentidos. Como un árbol de `n` nodos tiene `n-1` aristas, la solución completa requiere **O(n) tiempo y O(n) memoria**. Para un árbol de un solo nodo, ambos extremos son ese mismo nodo, el camino contiene solo ese nodo y el diámetro es `0`.
-
-## Compilar
-
-Requiere un compilador C++17 con soporte de `std::filesystem` (GCC 9+, Clang con biblioteca equivalente o Visual Studio 2019+) y CMake 3.16+. No se descargan dependencias y no se requiere Python para compilar ni ejecutar el programa.
-
-```sh
-cmake -S cpp -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-```
-
-En Windows con MinGW, seleccionar el generador al configurar:
-
-```powershell
-cmake -S cpp -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-```
-
-También se puede compilar directamente desde la raíz:
-
-```sh
-g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic -Icpp/include cpp/src/main.cpp cpp/src/tree.cpp cpp/src/bfs.cpp cpp/src/diameter.cpp cpp/src/json_export.cpp -o diametro
-```
-
-## Ejecutar y generar el JSON
-
-Desde la raíz del repositorio, en Linux/macOS:
-
-```sh
-./build/diametro --input inputs/arbol_demo.txt --output outputs/animacion_diametro.json --start 1
-```
-
-En PowerShell con MinGW:
-
-```powershell
-.\build\diametro.exe --input inputs/arbol_demo.txt --output outputs/animacion_diametro.json --start 1
-.\build\diametro.exe --input inputs/un_nodo.txt --output outputs/animacion_un_nodo.json
-```
-
-Con el generador de Visual Studio, el ejecutable queda en `build/Release/diametro.exe`.
-
-`--input` y `--output` son obligatorios; `--start` vale `1` por defecto. `--help` muestra la ayuda. La carpeta de salida debe existir. Los errores se escriben en `stderr` y devuelven código `1`; el éxito devuelve `0` e imprime nodos, extremos, longitud y salida.
-
-El ejemplo de siete nodos produce extremos **[7, 4]**, longitud **5**, camino **[7, 6, 5, 2, 3, 4]** y **86 eventos**. Los archivos de [outputs/](outputs/) fueron generados ejecutando el código C++; pueden entregarse directamente al equipo de animación.
 
 ## Entrada
 
@@ -93,7 +50,7 @@ No se usan contenedores ni algoritmos STL (`vector`, `queue`, `list`, `map`, `se
 1. Leer las aristas y construir ambas orientaciones de la adyacencia.
 2. Detectar duplicados mediante marcas por origen: al recorrer los vecinos de `u`, marcar cada vecino con `u`. Una marca repetida identifica una arista duplicada. No requiere ordenar, hashing ni comparar cada arista con todas las anteriores.
 3. Verificar conectividad con una cola propia. Este recorrido de validación no forma parte de las dos fases animadas.
-4. BFS 1 desde `--start`: encontrar el nodo más lejano `a`.
+4. BFS 1 desde el nodo inicial: encontrar el nodo más lejano `a`.
 5. BFS 2 desde `a`: encontrar el nodo más lejano `b`; su distancia es el diámetro.
 6. Seguir los padres del segundo BFS desde `b` y llenar el camino en orden inverso, entregándolo desde `a` hasta `b`.
 
@@ -126,7 +83,7 @@ Primero se valida toda la entrada y el resultado. Se escribe un temporal exclusi
 
 ## Validación realizada
 
-La implementación se verificó localmente con 23 pruebas, que cubren los casos T1–T12 del documento, la traza JSON completa, 75 árboles aleatorios y una cadena y una estrella de 10 000 nodos. Las pruebas y la configuración de CI se conservan localmente y están excluidas del seguimiento de Git. El repositorio distribuido contiene el código necesario para generar los JSON, las entradas de ejemplo y la documentación.
+La implementación se verificó localmente con 23 pruebas, que cubren los casos normales y borde, las entradas inválidas, la traza JSON completa, 75 árboles aleatorios y una cadena y una estrella de 10 000 nodos. Las pruebas y la configuración de CI se conservan localmente y están excluidas del seguimiento de Git. El repositorio distribuido contiene el código necesario para generar los JSON, las entradas de ejemplo y la documentación.
 
 ## Archivos
 
@@ -135,5 +92,4 @@ cpp/include/    Arreglos, cola, árbol, eventos y resultados
 cpp/src/        Lectura, validación, BFS, diámetro, JSON y CLI
 inputs/         Árbol demo, un nodo, dos nodos, cadena y estrella
 outputs/        JSON completos generados por C++ para animación
-docs/           Requerimientos originales del equipo
 ```
