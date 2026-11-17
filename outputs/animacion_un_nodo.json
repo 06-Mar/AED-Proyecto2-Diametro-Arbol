@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "algorithm": "tree_diameter_two_bfs",
+  "graph": {
+    "type": "undirected_unweighted_tree",
+    "node_count": 1,
+    "nodes": [1],
+    "edges": []
+  },
+  "config": {"initial_node": 1, "neighbor_order": "input_order", "farthest_tie_breaker": "smallest_node_id", "distance_unit": "edges"},
+  "runs": [
+    {"id": "bfs_1", "start": 1, "farthest_node": 1, "max_distance": 0,
+     "nodes": [
+      {"node": 1, "distance": 0, "parent": null}
+     ]},
+    {"id": "bfs_2", "start": 1, "farthest_node": 1, "max_distance": 0,
+     "nodes": [
+      {"node": 1, "distance": 0, "parent": null}
+     ]}
+  ],
+  "diameter": {"length": 0, "endpoints": [1, 1], "path_nodes": [1], "path_edges": []},
+  "events": [
+    {"step": 0, "phase": "bfs_1", "type": "phase_start", "start": 1},
+    {"step": 1, "phase": "bfs_1", "type": "node_discovered", "node": 1, "distance": 0, "parent": null},
+    {"step": 2, "phase": "bfs_1", "type": "node_enqueued", "node": 1},
+    {"step": 3, "phase": "bfs_1", "type": "node_dequeued", "node": 1},
+    {"step": 4, "phase": "bfs_1", "type": "node_finished", "node": 1},
+    {"step": 5, "phase": "bfs_1", "type": "phase_end", "start": 1, "farthest_node": 1, "max_distance": 0},
+    {"step": 6, "phase": "bfs_2", "type": "phase_start", "start": 1},
+    {"step": 7, "phase": "bfs_2", "type": "node_discovered", "node": 1, "distance": 0, "parent": null},
+    {"step": 8, "phase": "bfs_2", "type": "node_enqueued", "node": 1},
+    {"step": 9, "phase": "bfs_2", "type": "node_dequeued", "node": 1},
+    {"step": 10, "phase": "bfs_2", "type": "node_finished", "node": 1},
+    {"step": 11, "phase": "bfs_2", "type": "phase_end", "start": 1, "farthest_node": 1, "max_distance": 0},
+    {"step": 12, "phase": "result", "type": "diameter_path", "nodes": [1], "edges": []},
+    {"step": 13, "phase": "result", "type": "diameter_result", "endpoints": [1, 1], "length": 0}
+  ],
+  "stats": {"bfs_runs": 2, "events_count": 14}
+}
